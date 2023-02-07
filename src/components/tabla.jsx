@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Space, Table, Tag, Button } from 'antd';
+import Formulario from '../components/formulario.jsx';
 
 export const Tabla = ({
 
@@ -59,19 +60,10 @@ export const Tabla = ({
     },
   ];
 
-  const start = () => {
-    setCargando(true);
-    setTimeout(() => {
-      setCargando(false);
-    }, 1000);
-  };
-
   return (
     <div>
       <div style={{ marginBottom: 16, textAlign: 'left', marginLeft:16, marginTop: 16 }}>
-        <Button type="primary" onClick={start} cargando={cargando}>
-          Nuevo
-        </Button>
+        <Formulario></Formulario>
       </div>
       <Table columns={columns} dataSource={listadoContratos} />
     </div>
