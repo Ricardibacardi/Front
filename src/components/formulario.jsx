@@ -3,31 +3,51 @@ import { useState } from 'react';
 import { ValidateSpanishID } from '../js/validateDni.js'
 
 export const Formulario = ({
-    getListadoContratos
+    defaultFormulario,
+    setDefaultFormulario,
+    getListadoContratos,
+    open,
+    setOpen
 }) => {
 
-  const [open, setOpen] = useState(false);
   const [modalText, setModalText] = useState('');
   const [validarApellido, setValidarApellido] = useState(false);
   const [ textLocalidad, setTextLocalidad ] = useState('');
 
   const showModal = () => {
+    setDefaultFormulario({});
     setOpen(true);
   };
 
   async function onFinish (values) {
-    values.localidad = textLocalidad;
+    let method = "";
+    let url = "";
+    let datos = "";
+    let as = {};
+
+    if(typeof defaultFormulario?._id !== 'undefined' ){
+        let oid = defaultFormulario?._id;
+        method = "PUT";
+        url = "http://localhost:8000/modifycontract/"+oid;
+        datos = JSON.stringify(values)
+
+    }else{
+        method = "POST";
+        url = "http://localhost:8000/addcontract";
+        values.localidad = textLocalidad;
+        datos = JSON.stringify(values)
+    }
     setOpen(false)
 
     try {
 
         const requestOptions = {
-            method: 'POST',
+            method: method,
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(values)
+            body: datos
         };
         
-        fetch('http://localhost:8000/addcontract', requestOptions)
+        fetch(url, requestOptions)
             .then(response => response.json())
             getListadoContratos()
         
@@ -38,8 +58,8 @@ export const Formulario = ({
   };
 
   async function getCodigoPostal (values) {
-    setTextLocalidad("")
-
+    setTextLocalidad("");
+    
     try {
         
         let response = await fetch('http://localhost:8000/getlocalidad/'+values)
@@ -96,7 +116,9 @@ export const Formulario = ({
                         },
                     ]}
                 >
-                    <Input />
+                    <Input
+                        defaultValue={defaultFormulario.nombre}
+                     />
                 </Form.Item>
 
                 <Form.Item
@@ -109,14 +131,18 @@ export const Formulario = ({
                         },
                     ]}
                     >
-                    <Input />
+                    <Input 
+                        defaultValue={defaultFormulario.apellido1}
+                    />
                 </Form.Item>
 
                 <Form.Item
                     label="2º Apellido"
                     name="apellido2"
                     >
-                    <Input />
+                    <Input
+                        defaultValue={defaultFormulario.apellido2}
+                    />
                 </Form.Item>
 
                 <Form.Item
@@ -168,7 +194,9 @@ export const Formulario = ({
                         })
                     ]}
                     >
-                    <Input />
+                    <Input 
+                        defaultValue={defaultFormulario.documento} 
+                    />
                 </Form.Item>
                 
                 <Space align="baseline">
@@ -185,7 +213,9 @@ export const Formulario = ({
                             },
                         ]}
                         >
-                        <Input />
+                        <Input 
+                            defaultValue={defaultFormulario.cp}
+                        />
 
                     </Form.Item>
                 {textLocalidad}
@@ -196,7 +226,9 @@ export const Formulario = ({
                     label="Dirección"
                     name="direccion"
                     >
-                    <Input />
+                    <Input 
+                        defaultValue={defaultFormulario.direccion} 
+                    />
                 </Form.Item>
 
 
@@ -212,7 +244,9 @@ export const Formulario = ({
                         },
                     ]}
                     >
-                    <Input />
+                    <Input 
+                        defaultValue={defaultFormulario.telefono}
+                    />
                 </Form.Item>
                 <Form.Item label="">
                     <Button type="primary" htmlType="submit">

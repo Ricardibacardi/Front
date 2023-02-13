@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Table, Button } from 'antd';
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined,EditOutlined } from "@ant-design/icons";
 import Formulario from '../components/formulario.jsx';
 
 export const Tabla = ({
@@ -9,6 +9,18 @@ export const Tabla = ({
 
     const [listadoContratos, setListadoContratos] = useState([]);
     const [cargando, setCargando] = useState(false);
+    const [open, setOpen] = useState(false);
+    const [defaultFormulario, setDefaultFormulario] = useState({
+      nombre: "",
+      apellido1: "",
+      apellido2: "",
+      telefono: "",
+      documento: "",
+      email: "",
+      cp: "",
+      localidad: "",
+      direccion: ""
+    });
 
     useEffect(() => {
       getListadoContratos();
@@ -51,6 +63,17 @@ export const Tabla = ({
   }
 }
 
+async function getContrato(oid) {
+    try {
+      const respuesta = await fetch('http://localhost:8000/getcontract/'+oid);
+      const contratos = await respuesta.json();
+      setDefaultFormulario(contratos);
+      setOpen(true);
+  } catch (err) {
+      console.log("Error al obtener el contrato");
+  }
+}
+
   const columns = [
     {
       title: 'ID',
@@ -70,9 +93,10 @@ export const Tabla = ({
     {
       title: 'Acciones',
       key: 'action',
-      render: (datos, da) => (
-        <div className="action-buttons">
-            <Button onClick={() => borrarContrato(datos._id)} icon={<DeleteOutlined />} type="danger" >Borrar</Button>
+      render: (datos) => (
+        <div>
+            <Button onClick={() => getContrato(datos._id)} icon={<EditOutlined />} type="primary">Borrar</Button>
+            <Button onClick={() => borrarContrato(datos._id)} icon={<DeleteOutlined />} type="primary" danger>Borrar</Button>
         </div>
     ),
     },
@@ -81,9 +105,9 @@ export const Tabla = ({
   return (
     <div>
       <div style={{ marginBottom: 16, textAlign: 'left', marginLeft:16, marginTop: 16 }}>
-        <Formulario></Formulario>
+        <Formulario defaultFormulario={defaultFormulario} setDefaultFormulario={setDefaultFormulario} open={open} setOpen={setOpen} getListadoContratos={getListadoContratos()}></Formulario>
       </div>
-      <Table columns={columns} dataSource={listadoContratos} getListadoContratos={getListadoContratos()} />
+      <Table columns={columns} dataSource={listadoContratos} open={open} setOpen={setOpen}/>
     </div>
   );
 }
