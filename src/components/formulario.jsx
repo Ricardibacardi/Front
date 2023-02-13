@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { ValidateSpanishID } from '../js/validateDni.js'
 
 export const Formulario = ({
-
+    getListadoContratos
 }) => {
 
   const [open, setOpen] = useState(false);
@@ -16,6 +16,8 @@ export const Formulario = ({
   };
 
   async function onFinish (values) {
+    values.localidad = textLocalidad;
+    setOpen(false)
 
     try {
 
@@ -27,7 +29,7 @@ export const Formulario = ({
         
         fetch('http://localhost:8000/addcontract', requestOptions)
             .then(response => response.json())
-
+            getListadoContratos()
         
     } catch (err) {
         console.log(err);
@@ -36,15 +38,17 @@ export const Formulario = ({
   };
 
   async function getCodigoPostal (values) {
+    setTextLocalidad("")
 
     try {
         
         let response = await fetch('http://localhost:8000/getlocalidad/'+values)
         const data = await response.json();
-        setTextLocalidad(data[0].municipio_nombre)
+        setTextLocalidad(data.municipio_nombre)
 
         
     } catch (err) {
+        setTextLocalidad("")
         console.log(err);
     }
 
@@ -52,6 +56,11 @@ export const Formulario = ({
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
+  };
+  
+
+  const handleCancel = () => {
+    setOpen(false);
   };
 
   return (
@@ -62,11 +71,14 @@ export const Formulario = ({
         <Modal
             title=""
             open={open}
+            onCancel={handleCancel}
             footer={
                 <Space align='center'>
                     
                 </Space>
             }
+            destroyOnClose={true}
+            closable={false}
         >
         <Form
             name="basic"
@@ -158,30 +170,27 @@ export const Formulario = ({
                     >
                     <Input />
                 </Form.Item>
+                
+                <Space align="baseline">
 
-                <Form.Item
-                    label="Código postal"
-                    name="cp"
-                    onChange={(ev) => {getCodigoPostal(ev.target.value)}}
-                    rules={[
-                        {
-                            required: true,
-                            pattern: new RegExp(/^(?:0[1-9]|[1-4]\d|5[0-2])\d{3}$/),
-                            message: 'Introduce un codigo postal válido!',
-                        },
-                    ]}
-                    >
-                    <Input />
-                </Form.Item>
+                    <Form.Item
+                        label="Código postal"
+                        name="cp"
+                        onChange={(ev) => {getCodigoPostal(ev.target.value)}}
+                        rules={[
+                            {
+                                required: true,
+                                pattern: new RegExp(/^(?:0[1-9]|[1-4]\d|5[0-2])\d{3}$/),
+                                message: 'Introduce un codigo postal válido!',
+                            },
+                        ]}
+                        >
+                        <Input />
 
-                <Form.Item
-                    label="Localidad"
-                    name="localidad"
-                    >
-                    <Input 
-                        value={"tu puta madre"}
-                    />
-                </Form.Item>
+                    </Form.Item>
+                {textLocalidad}
+
+                </Space>
 
                 <Form.Item
                     label="Dirección"

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Space, Table, Tag, Button } from 'antd';
+import { Table, Button } from 'antd';
+import { DeleteOutlined } from "@ant-design/icons";
 import Formulario from '../components/formulario.jsx';
 
 export const Tabla = ({
@@ -19,9 +20,10 @@ export const Tabla = ({
         const contratos = await respuesta.json();
         const getContratos = contratos.map(item => {
              return {
-                idContrato: item.idContrato,
+                idContrato: Number(item.idContrato),
                 nombre: item.nombre,
                 documento: item.documento,
+                _id:item._id,
                 acciones: "?",
             }
         });
@@ -31,6 +33,23 @@ export const Tabla = ({
         console.log("Error al obtener los contratos");
     }
   }
+
+  async function borrarContrato(oid) {
+    try {
+      await fetch('http://localhost:8000/deletecontract/'+oid, {
+      method: 'DELETE'
+      }).then((response) => {
+          if (response.ok) {
+            getListadoContratos();
+          } else {
+              throw new Error('Error al borrar el contrato');
+          }
+      });
+
+  } catch (err) {
+      console.log("Error al obtener los contratos");
+  }
+}
 
   const columns = [
     {
@@ -51,12 +70,11 @@ export const Tabla = ({
     {
       title: 'Acciones',
       key: 'action',
-      render: (_, record) => (
-        <Space size="middle">
-          <a>Editar</a>
-          <a>Borrar</a>
-        </Space>
-      ),
+      render: (datos, da) => (
+        <div className="action-buttons">
+            <Button onClick={() => borrarContrato(datos._id)} icon={<DeleteOutlined />} type="danger" >Borrar</Button>
+        </div>
+    ),
     },
   ];
 
@@ -65,7 +83,7 @@ export const Tabla = ({
       <div style={{ marginBottom: 16, textAlign: 'left', marginLeft:16, marginTop: 16 }}>
         <Formulario></Formulario>
       </div>
-      <Table columns={columns} dataSource={listadoContratos} />
+      <Table columns={columns} dataSource={listadoContratos} getListadoContratos={getListadoContratos()} />
     </div>
   );
 }
