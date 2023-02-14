@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Table, Button } from 'antd';
+import { Table, Button, Space } from 'antd';
 import { DeleteOutlined,EditOutlined } from "@ant-design/icons";
 import Formulario from '../components/formulario.jsx';
 
@@ -7,10 +7,10 @@ export const Tabla = ({
 
 }) => {
 
-    const [listadoContratos, setListadoContratos] = useState([]);
-    const [cargando, setCargando] = useState(false);
-    const [open, setOpen] = useState(false);
-    const [defaultFormulario, setDefaultFormulario] = useState({
+    const [ listadoContratos, setListadoContratos] = useState([]);
+    const [ modalText, setModalText] = useState('Nuevo contrato');
+    const [ open, setOpen] = useState(false);
+    const [ defaultFormulario, setDefaultFormulario] = useState({
       nombre: "",
       apellido1: "",
       apellido2: "",
@@ -68,6 +68,7 @@ async function getContrato(oid) {
       const respuesta = await fetch('http://localhost:8000/getcontract/'+oid);
       const contratos = await respuesta.json();
       setDefaultFormulario(contratos);
+      setModalText("Editando contrato nº "+contratos.idContrato)
       setOpen(true);
   } catch (err) {
       console.log("Error al obtener el contrato");
@@ -95,8 +96,10 @@ async function getContrato(oid) {
       key: 'action',
       render: (datos) => (
         <div>
-            <Button onClick={() => getContrato(datos._id)} icon={<EditOutlined />} type="primary">Borrar</Button>
-            <Button onClick={() => borrarContrato(datos._id)} icon={<DeleteOutlined />} type="primary" danger>Borrar</Button>
+            <Space wrap>
+              <Button onClick={() => getContrato(datos._id)} icon={<EditOutlined />} type="primary" >Editar</Button>
+              <Button onClick={() => borrarContrato(datos._id)} icon={<DeleteOutlined />} type="primary" danger>Borrar</Button>
+            </Space>
         </div>
     ),
     },
@@ -105,7 +108,14 @@ async function getContrato(oid) {
   return (
     <div>
       <div style={{ marginBottom: 16, textAlign: 'left', marginLeft:16, marginTop: 16 }}>
-        <Formulario defaultFormulario={defaultFormulario} setDefaultFormulario={setDefaultFormulario} open={open} setOpen={setOpen} getListadoContratos={getListadoContratos()}></Formulario>
+        <Formulario 
+          defaultFormulario={defaultFormulario} 
+          setDefaultFormulario={setDefaultFormulario} 
+          open={open} 
+          setOpen={setOpen}
+          modalText={modalText}
+          setModalText={setModalText}
+        ></Formulario>
       </div>
       <Table columns={columns} dataSource={listadoContratos} open={open} setOpen={setOpen}/>
     </div>

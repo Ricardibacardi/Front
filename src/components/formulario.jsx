@@ -5,17 +5,19 @@ import { ValidateSpanishID } from '../js/validateDni.js'
 export const Formulario = ({
     defaultFormulario,
     setDefaultFormulario,
-    getListadoContratos,
     open,
-    setOpen
+    setOpen,
+    modalText,
+    setModalText
 }) => {
 
-  const [modalText, setModalText] = useState('');
-  const [validarApellido, setValidarApellido] = useState(false);
+  const [ validarApellido, setValidarApellido] = useState(false);
   const [ textLocalidad, setTextLocalidad ] = useState('');
 
   const showModal = () => {
+    setModalText("Nuevo contrato");
     setDefaultFormulario({});
+    setTextLocalidad("")
     setOpen(true);
   };
 
@@ -49,7 +51,6 @@ export const Formulario = ({
         
         fetch(url, requestOptions)
             .then(response => response.json())
-            getListadoContratos()
         
     } catch (err) {
         console.log(err);
@@ -89,7 +90,7 @@ export const Formulario = ({
             Nuevo
         </Button>
         <Modal
-            title=""
+            title={modalText}
             open={open}
             onCancel={handleCancel}
             footer={
