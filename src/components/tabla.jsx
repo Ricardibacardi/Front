@@ -39,7 +39,7 @@ export const Tabla = ({
                 acciones: "?",
             }
         });
-
+console.log("tu puta madre");
         setListadoContratos(getContratos);
     } catch (err) {
         console.log("Error al obtener los contratos");
@@ -115,6 +115,7 @@ async function getContrato(oid) {
           setOpen={setOpen}
           modalText={modalText}
           setModalText={setModalText}
+          getListadoContratos={getListadoContratos}
         ></Formulario>
       </div>
       <Table columns={columns} dataSource={listadoContratos} open={open} setOpen={setOpen}/>

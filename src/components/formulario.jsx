@@ -8,7 +8,8 @@ export const Formulario = ({
     open,
     setOpen,
     modalText,
-    setModalText
+    setModalText,
+    getListadoContratos
 }) => {
 
   const [ validarApellido, setValidarApellido] = useState(false);
@@ -50,7 +51,9 @@ export const Formulario = ({
         };
         
         fetch(url, requestOptions)
-            .then(response => response.json())
+            .then(response => getListadoContratos())
+
+            
         
     } catch (err) {
         console.log(err);
@@ -236,7 +239,6 @@ export const Formulario = ({
                 <Form.Item
                     label="Teléfono"
                     name="telefono"
-                    
                     rules={[
                         {
                             required: true,
